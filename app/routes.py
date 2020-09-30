@@ -1,14 +1,13 @@
 from app import app
-from app.forms import LoginForm
+from app.forms import LoginForm, GradeinForm, LiveOptionForm
 from app.models import User
 from flask_login import current_user, login_user, logout_user, login_required
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, send_file
 from werkzeug.urls import url_parse
 
 @app.route('/')
 @app.route('/index')
 def index():
-    # return "Hello, World!"
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -33,9 +32,15 @@ def login():
     return render_template('login.html', title='登录', form=form)
 
 
-@app.route('/gradein')
+@app.route('/gradein', methods=['GET', 'POST'])
+@login_required
 def gradein():
-    return '瞅啥，还没写好'
+    form = GradeinForm()
+    # 提交成功，插入数据库
+    if form.validate_on_submit():
+        return redirect(url_for('gradein'))
+    
+    return render_template('gradein.html', title='录入', form=form)
 
 
 @app.route('/logout')
@@ -45,6 +50,11 @@ def logout():
 
 
 
-@app.route('/living')
+@app.route('/living', methods=['GET', 'POST'])
 def living():
-    return '瞅啥，还没写好'
+    form = LiveOptionForm()
+    labels = ['选手', '成绩']
+    content = [('wyj', '0.01'), ('lx', '-.01')]
+    if form.validate_on_submit():
+        return render_template('living.html', form=form, labels=labels, content=content)
+    return render_template('living.html', form=form)

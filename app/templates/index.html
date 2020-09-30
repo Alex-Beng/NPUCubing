@@ -2,9 +2,10 @@
 
 {% block content %}
     {% if current_user.user_name %}
-    <h1>Hi, {{ current_user.user_name }}!</h1>
+    <h1>Hi, {{ current_user.user_name }}! </h1><br>
+    <h3>你现在是一名录入工具人了！</h3>
     {% else %}
-    <h1>先登录，再录入，实在不行康直播</h1>
+    <h1>工具人先登录，再录入。<br> 路人随意康直播</h1>
     {% endif %}
 
     {% with messages = get_flashed_messages() %}
