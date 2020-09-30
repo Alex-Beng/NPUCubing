@@ -1,32 +1,23 @@
 {% extends 'bootstrap/base.html' %}
 
+
 {% block title %}
-    {% if title %}{{ title }} - Microblog{% else %}Welcome to Microblog{% endif %}
+    {% if title %}{{ title }} - NPUCA{% else %}Welcome to NPUCA赛事管理{% endif %}
 {% endblock %}
-
-{% block scripts %}
-    {{ super() }}
-    {{ moment.include_moment() }}
-{% endblock %}
-
 
 {% block navbar %}
     <nav class="navbar navbar-default">
-        <div >Microblog: 
+        <div >NPUCA: 
 
-            <a href="{{ url_for('index') }}">Home</a>
-            <!-- 登录了就是logout -->
+            <a href="{{ url_for('index') }}">主页</a>
             {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('login') }}">登录</a>
             {% else %}
-            <!-- 个人页面与登出 -->
-            <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('gradein') }}">录入</a>
+            <a href="{{ url_for('logout') }}">退出</a>
             {% endif %}
-
-            {% if user == current_user %}
-            <p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
-            {% endif %}
+            <a href="{{ url_for('living') }}">直播</a>
+            
         </div>
     </nav>
 {% endblock %}
@@ -45,6 +36,3 @@
         {% block app_content %}{% endblock %}
     </div>
 {% endblock %}
-
-
-

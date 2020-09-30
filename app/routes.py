@@ -1,65 +1,42 @@
-from flask import render_template, flash, redirect, url_for, request
-from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, ResetPasswordRequestForm, ResetPasswordForm
-from flask_login import current_user, login_user, logout_user, login_required
+from app import app
+from app.forms import LoginForm
 from app.models import User
+from flask_login import current_user, login_user, logout_user, login_required
+from flask import render_template, flash, redirect, url_for, request
 from werkzeug.urls import url_parse
-from datetime import datetime
-from app.email import send_password_reset_email
-
-
-
-# 在处理请求前被调用
-@app.before_request
-def before_request():
-    if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
-        db.session.commit()
-
 
 @app.route('/')
 @app.route('/index')
-@login_required
 def index():
-    posts = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
-    return render_template('index.html', title='Home', posts=posts)
-
+    # return "Hello, World!"
+    return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
-    # 如果已经登陆，重定向到index页面
+def login():    
+    # 已经登录
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-
+    # 实例化表单
     form = LoginForm()
     if form.validate_on_submit():
-        # 从数据库查询，匹配第一个
-        user = User.query.filter_by(username=form.username.data).first()
-        # 用户不存在/密码错误
-            # 重定向到login
+        user = User.query.filter_by(user_name=form.user_name.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('无效用户名或密码')
             return redirect(url_for('login'))
-        # 如果密码正确
         login_user(user, remember=form.remember_me.data)
 
-        # 有了next参数可以不默认返回首页了
-        # netloc != '' 是绝对地址，直接重定向到首页
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
-        
-    return render_template('login.html', title='Sign In', form=form)
+
+    return render_template('login.html', title='登录', form=form)
+
+
+@app.route('/gradein')
+def gradein():
+    return '瞅啥，还没写好'
+
 
 @app.route('/logout')
 def logout():
@@ -67,72 +44,7 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
 
-@app.route('/user/<username>')
-@login_required
-def user(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
-    return render_template('user.html', user=user, posts=posts)
-
-@app.route('/edit_profile', methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    form = EditProfileForm(current_user.username)
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.about_me = form.about_me.data
-        db.session.commit()
-        flash('Your changes have been saved.')
-        return redirect(url_for('edit_profile'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', title='Edit Profile',
-                           form=form)
-
-@app.route('/reset_password_request', methods=['GET', 'POST'])
-def reset_password_request():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = ResetPasswordRequestForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            send_password_reset_email(user)
-        flash('Check your email for the instructions to reset your password')
-        return redirect(url_for('login'))
-    return render_template('reset_password_request.html',
-                           title='Reset Password', form=form)
-
-
-@app.route('/reset_password/<token>', methods=['GET', 'POST'])
-def reset_password(token):
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    user = User.verify_reset_password_token(token)
-    if not user:
-        return redirect(url_for('index'))
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        user.set_password(form.password.data)
-        db.session.commit()
-        flash('Your password has been reset.')
-        return redirect(url_for('login'))
-    return render_template('reset_password.html', form=form)
+@app.route('/living')
+def living():
+    return '瞅啥，还没写好'
