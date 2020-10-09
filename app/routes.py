@@ -38,6 +38,8 @@ def gradein():
     form = GradeinForm()
     # 提交成功，插入数据库
     if form.validate_on_submit():
+        # 验证正确性
+         
         return redirect(url_for('gradein'))
     
     return render_template('gradein.html', title='录入', form=form)

@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Player, Comp, Result, entry
+from app.models import User, Player, Comp, Result, Entry
 
 
 # 设置 flask shell 上下文\
@@ -12,5 +12,5 @@ def make_shell_context():
                 'Player': Player, 
                 'Comp': Comp, 
                 'Result': Result,
-                'entry': entry
+                'Entry': Entry
             }

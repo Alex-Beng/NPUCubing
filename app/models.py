@@ -13,7 +13,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
 
     def __repr__(self):
-        return '<User {}>'.format(self.user_name)
+        return '<{}User {}>'.format(self.id, self.user_name)
     
     # 密码儿
     def set_password(self, password):
@@ -22,17 +22,22 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 class Player(db.Model):
+    # id是学号
     id = db.Column(db.String(15), primary_key=True)
     player_name = db.Column(db.String(64), index=True)
     player_gender = db.Column(db.String(5))
 
     def __repr__(self):
-        return '<Player {}>'.format(self.player_name)
+        return '<{}Player {}, gender {}>'.format(self.id, self.player_name, self.player_gender)
 
 class Comp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     comp_name = db.Column(db.String(128), index=True)
     comp_date = db.Column(db.Date)
+    
+    def __repr__(self):
+        return '<{}Comp {} in {}>'.format(self.id, self.comp_name, self.comp_date)
+
 
 class Result(db.Model):
     player_id = db.Column(db.String(15), db.ForeignKey('player.id'), primary_key=True)
@@ -46,9 +51,11 @@ class Result(db.Model):
     res4 = db.Column(db.BigInteger)
     res5 = db.Column(db.BigInteger)
 
+    def __repr__(self):
+        return '<Result {}>'.format(self.player_id)
 # 参赛关系
-entry = db.Table('entry',
-    db.Column('comp_id', db.Integer, db.ForeignKey('comp.id'), primary_key=True),
-    db.Column('player_id', db.String(15), db.ForeignKey('player.id'), primary_key=True)
-)
+class Entry(db.Model):
+    comp_id =  db.Column(db.Integer, db.ForeignKey('comp.id'), primary_key=True)
+    player_id = db.Column(db.String(15), db.ForeignKey('player.id'), primary_key=True)
+    sign_id = db.Column(db.Integer)
 

@@ -15,3 +15,6 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or 'yfast_send@163.com'
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'KZXYSNSKSKWUJILA'
     ADMINS = ['yfast_send@163.com']
+
+    # 设置comp_id
+    COMP_ID = 1

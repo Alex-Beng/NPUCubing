@@ -1,8 +1,8 @@
-"""init tables
+"""init db
 
-Revision ID: 9645ac17bbe6
+Revision ID: 3110b1a9a951
 Revises: 
-Create Date: 2020-09-30 14:13:00.399222
+Create Date: 2020-10-09 11:39:28.167448
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9645ac17bbe6'
+revision = '3110b1a9a951'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -42,6 +42,7 @@ def upgrade():
     op.create_table('entry',
     sa.Column('comp_id', sa.Integer(), nullable=False),
     sa.Column('player_id', sa.String(length=15), nullable=False),
+    sa.Column('sign_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['comp_id'], ['comp.id'], ),
     sa.ForeignKeyConstraint(['player_id'], ['player.id'], ),
     sa.PrimaryKeyConstraint('comp_id', 'player_id')
