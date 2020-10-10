@@ -25,14 +25,14 @@ db.session.commit()
 p_names = ['吴语嘉', '李想', '赵狗']
 p_gender = ['男', '男', '女']
 for i in range(len(p_names)):
-    p = Player(id=i, player_name=p_names[i], player_gender=p_gender[i])
+    p = Player(id=i+20200, player_name=p_names[i], player_gender=p_gender[i])
     # print(p)
     db.session.add(p)
 db.session.commit()
 
 # Comp添加数据
-comp_names = ['某届魔方赛', '某届魔方赛2']
-comp_dates = [datetime.date(2020, 5, 15), datetime.date(2020, 5, 20)]
+comp_names = ['第四届校内赛', '第五届校内赛']
+comp_dates = [datetime.date(2020, 5, 15), datetime.date(2021, 5, 20)]
 for i in range(len(comp_names)):
     c = Comp(id=i, comp_name=comp_names[i], comp_date=comp_dates[i])
     # print(c)
@@ -41,7 +41,7 @@ db.session.commit()
 
 
 # Events添加数据
-event_names=['333', '333of', 'czz']
+event_names=['222', '333', '333of', 'czz']
 for i in range(len(event_names)):
     e = Events(name=event_names[i])
     # print(e)
@@ -49,18 +49,18 @@ for i in range(len(event_names)):
 db.session.commit()
 
 # CompEvents添加数据
-comp_ids = [0, 0]
-event_names = ['333', '333of']
-round_nums = [2, 1]
+comp_ids = [0, 0, 0, 0]
+event_names = ['222', '333', '333of', 'czz']
+round_nums = [2, 2, 1, 1]
 for i in range(len(comp_ids)):
     ce = CompEvents(comp_id=comp_ids[i], event_name=event_names[i], round_num=round_nums[i])
     db.session.add(ce)
 db.session.commit()
 
 # Entry添加数据
-comp_ids = [0, 1]
-sign_ids = [0, 0]
-player_ids = [0, 0]
+comp_ids = [0, 0, 0]
+sign_ids = [0, 2, 1]
+player_ids = [20200, 20201, 20202]
 for i in range(len(comp_ids)):
     e = Entry(comp_id=comp_ids[i], sign_id=sign_ids[i], player_id=player_ids[i])
     db.session.add(e)

@@ -5,6 +5,18 @@ from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, flash, redirect, url_for, request, send_file
 from werkzeug.urls import url_parse
 
+# 去尾平均
+def ao5(res):
+    performs = list(res[-5:])
+    for idx,perf in enumerate(performs):
+        if perf < 0:
+            performs[idx] = float("inf")
+    del performs[performs.index(max(performs))]
+    del performs[performs.index(min(performs))]
+    print(performs)
+    return sum(performs)/3
+
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -97,9 +109,9 @@ def gradein():
             item=form_event
             )
         
-        if res_num == 1:
+        if res_num >= 1:
             result.res1=form_parsed_res[0]
-        if res_num == 3:
+        if res_num >= 3:
             result.res2=form_parsed_res[1]
             result.res3=form_parsed_res[2]
         if res_num == 5:
@@ -123,8 +135,65 @@ def logout():
 @app.route('/living', methods=['GET', 'POST'])
 def living():
     form = LiveOptionForm()
-    labels = ['选手', '成绩']
-    content = [('wyj', '0.01'), ('lx', '-.01')]
+    labels = ['选手序号', '名字', '成绩', '详细成绩', '', '', '', '']
+    content = []
     if form.validate_on_submit():
+        comp_id = app.config['COMP_ID']
+
+        form_round = form.rround.data
+        form_event = form.item.data
+
+        # 验证项目轮次正确
+        db_compevent = db.session.query(CompEvents).get((comp_id, form_event))
+        if not db_compevent:
+            flash("赛事未开设此项目")
+            return redirect(url_for('living'))
+        db_round = db_compevent.round_num
+        if db_round < form_round or form_round < 1:
+            flash("此项目妹有这个轮次")
+            return redirect(url_for('living'))
+
+        # 从result表查询成绩
+        curr_res = db.session \
+            .query(Entry.sign_id,
+                #    Player.id,
+                   Player.player_name, 
+                #    Result.item,
+                   Result.res1,
+                   Result.res2,
+                   Result.res3,
+                   Result.res4,
+                   Result.res5) \
+            .join(Player, Result.player_id==Player.id) \
+            .join(Entry, Result.player_id==Entry.player_id) \
+            .filter(Result.round==form_round, Result.comp_id==comp_id) \
+            .all()
+
+        if len(curr_res)==0:
+            flash("此轮次尚未有成绩更新")
+            return redirect(url_for('living'))
+        # 取最好
+        if form_round == 1:
+            curr_res = sorted(curr_res, key=lambda res: min(res[-5], res[-4], res[-3]))
+        # 取去尾平均
+        elif form_round == 2:
+            curr_res = sorted(curr_res, key=ao5)
+
+        for row in curr_res:
+            # new_row = [i for i in row]
+            new_row = []
+            for i in row:
+                if i == -1:
+                    new_row.append('DNF')
+                elif i == -2:
+                    new_row.append('DNS')
+                else:
+                    new_row.append(i)
+            if form_round == 1:
+                new_row.insert(-5, min(row[-5], row[-4], row[-3]))
+            elif form_round == 2:
+                new_row.insert(-5, ao5(row))
+            print(row, new_row)
+            content.append( new_row )
         return render_template('living.html', form=form, labels=labels, content=content)
     return render_template('living.html', form=form)
