@@ -17,4 +17,4 @@ class Config(object):
     ADMINS = ['yfast_send@163.com']
 
     # 设置comp_id
-    COMP_ID = 1
+    COMP_ID = 0

@@ -38,6 +38,19 @@ class Comp(db.Model):
     def __repr__(self):
         return '<{}Comp {} in {}>'.format(self.id, self.comp_name, self.comp_date)
 
+# 赛事项目关系
+class CompEvents(db.Model):
+    comp_id = db.Column(db.Integer, db.ForeignKey('comp.id'), primary_key=True)
+    event_name = db.Column(db.String(15), db.ForeignKey('events.name'), primary_key=True)
+    round_num = db.Column(db.Integer)
+    def __repr__(self):
+        return '<CompEvent {} in {} {}round>'.format(self.event_name, self.comp_id, self.round_num)
+
+class Events(db.Model):
+    name = db.Column(db.String(15), primary_key=True)
+    def __repr__(self):
+        return '<Event {}>'.format(self.name)
+
 
 class Result(db.Model):
     player_id = db.Column(db.String(15), db.ForeignKey('player.id'), primary_key=True)
@@ -56,6 +69,6 @@ class Result(db.Model):
 # 参赛关系
 class Entry(db.Model):
     comp_id =  db.Column(db.Integer, db.ForeignKey('comp.id'), primary_key=True)
-    player_id = db.Column(db.String(15), db.ForeignKey('player.id'), primary_key=True)
-    sign_id = db.Column(db.Integer)
+    sign_id = db.Column(db.Integer, primary_key=True)
+    player_id = db.Column(db.String(15), db.ForeignKey('player.id'))
 

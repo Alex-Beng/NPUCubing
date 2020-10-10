@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Player, Comp, Result, Entry
+from app.models import User, Player, Comp, CompEvents, Events, Result, Entry
 
 import datetime
 
@@ -7,7 +7,7 @@ import datetime
 db.create_all()
 # 删光数据，谢谢
 print("deleting below data...")
-yaya = [User, Player, Comp, Result, Entry]
+yaya = [User, Player, Comp, CompEvents, Events, Result, Entry]
 for tb in yaya:
     t = tb.query.all()
     print(tb, t)
@@ -40,4 +40,28 @@ for i in range(len(comp_names)):
 db.session.commit()
 
 
+# Events添加数据
+event_names=['333', '333of', 'czz']
+for i in range(len(event_names)):
+    e = Events(name=event_names[i])
+    # print(e)
+    db.session.add(e)
+db.session.commit()
 
+# CompEvents添加数据
+comp_ids = [0, 0]
+event_names = ['333', '333of']
+round_nums = [2, 1]
+for i in range(len(comp_ids)):
+    ce = CompEvents(comp_id=comp_ids[i], event_name=event_names[i], round_num=round_nums[i])
+    db.session.add(ce)
+db.session.commit()
+
+# Entry添加数据
+comp_ids = [0, 1]
+sign_ids = [0, 0]
+player_ids = [0, 0]
+for i in range(len(comp_ids)):
+    e = Entry(comp_id=comp_ids[i], sign_id=sign_ids[i], player_id=player_ids[i])
+    db.session.add(e)
+db.session.commit()

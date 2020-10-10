@@ -10,7 +10,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('登录')
 
 class GradeinForm(FlaskForm):
-    player_id = StringField('序号', validators=[DataRequired()])
+    sign_id = StringField('选手序号', validators=[DataRequired()])
     # 直接硬编码comp_id好了
 #     comp_id = SelectField('比赛编码', choices=[(1, 'yay'), (2, 'ya')], render_kw={
 #             'class': 'form-control'

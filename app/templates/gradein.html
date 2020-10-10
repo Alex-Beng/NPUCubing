@@ -2,12 +2,13 @@
 
 {% block content %}
     <h1>成绩录入</h1>
+    <p>切记成绩用 <B>毫秒数 毫秒数 毫秒数</B> 。<b>不要 不要 不要</b>小数点</p>
     <form action="" method="post" novalidate class="form-horizontal">
         {{ form.hidden_tag() }}
         <div>
-            {{ form.player_id.label }}
-            {{ form.player_id(size=32) }}
-            {% for error in form.player_id.errors %}
+            {{ form.sign_id.label }}
+            {{ form.sign_id(size=32) }}
+            {% for error in form.sign_id.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
@@ -66,4 +67,15 @@
         </div>
         <p>{{ form.submit() }}</p>
     </form>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
 {% endblock %}
