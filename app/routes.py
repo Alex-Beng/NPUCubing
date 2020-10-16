@@ -166,7 +166,7 @@ def living():
                    Result.res5) \
             .join(Player, Result.player_id==Player.id) \
             .join(Entry, Result.player_id==Entry.player_id) \
-            .filter(Result.round==form_round, Result.comp_id==comp_id) \
+            .filter(Result.round==form_round, Result.comp_id==comp_id, Result.item==form_event) \
             .all()
 
         if len(curr_res)==0:
