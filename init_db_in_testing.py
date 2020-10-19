@@ -21,6 +21,7 @@ db.session.add(u)
 db.session.commit()
 
 
+
 # player添加数据
 p_names = ['吴语嘉', '李想', '赵狗']
 p_gender = ['男', '男', '女']
@@ -44,19 +45,18 @@ db.session.commit()
 event_names=['222', '333', '333of', 'czz']
 for i in range(len(event_names)):
     e = Events(name=event_names[i])
-    # print(e)
+    # print(e)s
     db.session.add(e)
 db.session.commit()
 
 # CompEvents添加数据
-comp_ids = [0, 0, 0, 0]
-event_names = ['222', '333', '333of', 'czz']
-round_nums = [2, 2, 1, 1]
+comp_ids = [0, 0, 0, 0, 0, 0]
+event_names = ['222', '333', '222', '333', '333of', 'czz']
+round_cnts = [2, 2, 1, 1, 1, 1]
 for i in range(len(comp_ids)):
-    ce = CompEvents(comp_id=comp_ids[i], event_name=event_names[i], round_num=round_nums[i])
+    ce = CompEvents(comp_id=comp_ids[i], event_name=event_names[i], round_cnt=round_cnts[i])
     db.session.add(ce)
 db.session.commit()
-
 # Entry添加数据
 comp_ids = [0, 0, 0]
 sign_ids = [0, 2, 1]

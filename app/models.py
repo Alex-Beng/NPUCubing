@@ -38,13 +38,15 @@ class Comp(db.Model):
     def __repr__(self):
         return '<{}Comp {} in {}>'.format(self.id, self.comp_name, self.comp_date)
 
-# 赛事项目关系
+# 赛事轮次关系
 class CompEvents(db.Model):
     comp_id = db.Column(db.Integer, db.ForeignKey('comp.id'), primary_key=True)
     event_name = db.Column(db.String(15), db.ForeignKey('events.name'), primary_key=True)
-    round_num = db.Column(db.Integer)
+    round_cnt = db.Column(db.Integer, primary_key=True)
+    # 计算成绩方式
+    compute_way = db.Column(db.String(7))
     def __repr__(self):
-        return '<CompEvent {} in {} {}round>'.format(self.event_name, self.comp_id, self.round_num)
+        return '<CompEvent {} in {} {}round>'.format(self.event_name, self.comp_id, self.round_cnt)
 
 class Events(db.Model):
     name = db.Column(db.String(15), primary_key=True)

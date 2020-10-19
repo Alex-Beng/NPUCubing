@@ -5,6 +5,15 @@ from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, flash, redirect, url_for, request, send_file
 from werkzeug.urls import url_parse
 
+# 取最好
+def bo3(res):
+    performs = list(res[-5:][:3])
+    for idx,perf in enumerate(performs):
+        if perf < 0:
+            performs[idx] = float("inf")
+    # print(performs)
+    return min(performs)
+
 # 去尾平均
 def ao5(res):
     performs = list(res[-5:])
@@ -13,7 +22,7 @@ def ao5(res):
             performs[idx] = float("inf")
     del performs[performs.index(max(performs))]
     del performs[performs.index(min(performs))]
-    print(performs)
+    # print(performs)
     return sum(performs)/3
 
 
@@ -65,16 +74,11 @@ def gradein():
         form_round = form.rround.data
         form_event = form.item.data
 
-        db_compevent = db.session.query(CompEvents).get((comp_id, form_event))
+        db_compevent = db.session.query(CompEvents).get((comp_id, form_event, form_round))
         if not db_compevent:
-            flash("赛事未开设此项目")
+            flash("赛事未开设此项目或轮次不正确")
             return redirect(url_for('gradein'))
-        
-        db_round = db_compevent.round_num
-        if db_round < form_round or form_round < 1:
-            flash("项目轮次不正确")
-            return redirect(url_for('gradein'))
-        
+        # print(db_compevent.compute_way)
         # 验证成绩有效
         form_res = []
         form_res.append(form.res1.data)
@@ -82,25 +86,24 @@ def gradein():
         form_res.append(form.res3.data)
         form_res.append(form.res4.data)
         form_res.append(form.res5.data)
-        # print(form_res)
+
+        if db_compevent.compute_way == 'bo3':
+            form_res = form_res[:3]
+
         form_parsed_res = []
         try:
             for res in form_res:
                 if res != '':
-                    # 只要别输入负数就行
-                    form_parsed_res.append(int(res))
-        except Exception as e:
+                    value = int(res)
+                    form_parsed_res.append(value)
+        except Exception:
             flash("成绩不符合规范")
-            
             return redirect(url_for('gradein'))
-        res_num = len(form_parsed_res)
-        if res_num==1 or res_num==3 or res_num==5:
-            pass
-        else:
+        if db_compevent.compute_way == 'ao5' and len(form_parsed_res)!=5 \
+        or db_compevent.compute_way == 'bo3' and len(form_parsed_res)!=3:
             flash("成绩数量不对鸭")
-            
-        # print(form_parsed_res)
-        
+            return redirect(url_for('gradein'))
+                    
         # 插入数据库库
         result = Result(
             player_id=db_players.player_id, 
@@ -108,7 +111,7 @@ def gradein():
             round=form_round,
             item=form_event
             )
-        
+        res_num = len(form_parsed_res)
         if res_num >= 1:
             result.res1=form_parsed_res[0]
         if res_num >= 3:
@@ -118,7 +121,11 @@ def gradein():
             result.res4=form_parsed_res[3]
             result.res5=form_parsed_res[4]
         db.session.add(result)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            flash("此人此项目轮次已录入")
+            return redirect(url_for('gradein'))
         flash("录入成功，工具人请继续")
         return redirect(url_for('gradein'))
     
@@ -135,7 +142,7 @@ def logout():
 @app.route('/living', methods=['GET', 'POST'])
 def living():
     form = LiveOptionForm()
-    labels = ['选手序号', '名字', '成绩', '详细成绩', '', '', '', '']
+    labels = ['排名', '选手序号', '名字', '成绩', '详细成绩', '', '', '', '']
     content = []
     if form.validate_on_submit():
         comp_id = app.config['COMP_ID']
@@ -144,28 +151,22 @@ def living():
         form_event = form.item.data
 
         # 验证项目轮次正确
-        db_compevent = db.session.query(CompEvents).get((comp_id, form_event))
+        db_compevent = db.session.query(CompEvents).get((comp_id, form_event, form_round))
         if not db_compevent:
-            flash("赛事未开设此项目")
-            return redirect(url_for('living'))
-        db_round = db_compevent.round_num
-        if db_round < form_round or form_round < 1:
-            flash("此项目妹有这个轮次")
+            flash("赛事未开设此项目或轮次不正确")
             return redirect(url_for('living'))
 
         # 从result表查询成绩
         curr_res = db.session \
             .query(Entry.sign_id,
-                #    Player.id,
                    Player.player_name, 
-                #    Result.item,
                    Result.res1,
                    Result.res2,
                    Result.res3,
                    Result.res4,
                    Result.res5) \
             .join(Player, Result.player_id==Player.id) \
-            .join(Entry, Result.player_id==Entry.player_id) \
+            .join(Result, Result.player_id==Entry.player_id) \
             .filter(Result.round==form_round, Result.comp_id==comp_id, Result.item==form_event) \
             .all()
 
@@ -173,27 +174,43 @@ def living():
             flash("此轮次尚未有成绩更新")
             return redirect(url_for('living'))
         # 取最好
-        if form_round == 1:
-            curr_res = sorted(curr_res, key=lambda res: min(res[-5], res[-4], res[-3]))
+        if db_compevent.compute_way == 'bo3':
+            curr_res = sorted(curr_res, key=bo3)
         # 取去尾平均
-        elif form_round == 2:
+        elif db_compevent.compute_way == 'ao5':
             curr_res = sorted(curr_res, key=ao5)
 
-        for row in curr_res:
-            # new_row = [i for i in row]
-            new_row = []
-            for i in row:
-                if i == -1:
+        
+        for idx, row in enumerate(curr_res):
+            # print(row)
+            new_row = [idx+1]
+            for i in range(2):
+                new_row.append(row[i])
+            # print(new_row)
+            for i in range(2, 7):
+                try:
+                    time_in_ms = int(row[i])
+                    if time_in_ms < 0:
+                        int('')
+                    time_in_s = "%.2f"%(time_in_ms/1000.0)
+                    new_row.append(time_in_s)
+                except Exception:
                     new_row.append('DNF')
-                elif i == -2:
-                    new_row.append('DNS')
+            # print(new_row)
+                
+            if db_compevent.compute_way == 'bo3':
+                best = bo3(row)/1000.0
+                if best == float("inf"):
+                    new_row.insert(-5, 'DNF')
                 else:
-                    new_row.append(i)
-            if form_round == 1:
-                new_row.insert(-5, min(row[-5], row[-4], row[-3]))
-            elif form_round == 2:
-                new_row.insert(-5, ao5(row))
-            print(row, new_row)
+                    new_row.insert(-5, "%.2f"%best)
+            elif db_compevent.compute_way == 'ao5':
+                best = ao5(row)/1000.0
+                if best == float("inf"):
+                    new_row.insert(-5, 'DNF')
+                else:
+                    new_row.insert(-5, "%.2f"%best)
+            # print(row, new_row)
             content.append( new_row )
-        return render_template('living.html', form=form, labels=labels, content=content)
-    return render_template('living.html', form=form)
+        return render_template('living.html', form=form, labels=labels, content=content, title='直播')
+    return render_template('living.html', form=form, title='直播')
