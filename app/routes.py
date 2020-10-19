@@ -1,5 +1,5 @@
 from app import app, db
-from app.forms import LoginForm, GradeinForm, LiveOptionForm
+from app.forms import LoginForm, GradeinForm, LiveOptionForm, GradedelForm
 from app.models import User, Player, Comp, CompEvents, Events, Result, Entry
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import render_template, flash, redirect, url_for, request, send_file
@@ -166,7 +166,7 @@ def living():
                    Result.res4,
                    Result.res5) \
             .join(Player, Result.player_id==Player.id) \
-            .join(Entry, Entry.player_id==Result.player_id) \ 
+            .join(Entry, Entry.player_id==Result.player_id) \
             .filter(Result.round==form_round, Result.comp_id==comp_id, Result.item==form_event) \
             .all()
             # wdnmd这个查询的第二个join似乎跟版本相关，之后要改成直接用sql
@@ -215,3 +215,42 @@ def living():
             content.append( new_row )
         return render_template('living.html', form=form, labels=labels, content=content, title='直播')
     return render_template('living.html', form=form, title='直播')
+
+@app.route('/gradedel', methods=['GET', 'POST'])
+@login_required
+def gradedel():
+    form = GradedelForm()
+    # 确认删除
+    if form.validate_on_submit():
+        # 获得当前comp_id
+        comp_id = app.config['COMP_ID']
+        
+        # 验证选手报名了比赛
+        form_sign_id = form.sign_id.data
+        db_players = db.session.query(Entry).get((comp_id, form_sign_id))
+        if not db_players:
+            flash("选手不存在或未参加")
+            return redirect(url_for('gradedel'))
+
+        # 验证项目及轮次是否正确
+        form_round = form.rround.data
+        form_event = form.item.data
+
+        db_compevent = db.session.query(CompEvents).get((comp_id, form_event, form_round))
+        if not db_compevent:
+            flash("赛事未开设此项目或轮次不正确")
+            return redirect(url_for('gradedel'))
+        
+        # 验证该选手有无录入的成绩
+        db_res = db.session.query(Result).get((db_players.player_id, comp_id, form_round, form_event))
+        if not db_res:
+            flash("该选手此轮次未录入")
+            return redirect(url_for('gradedel'))
+        
+        # 进行删除
+        db.session.delete(db_res)
+        db.session.commit()
+        flash("成功删除{}的{}第{}轮成绩".format(db_players.player_id, form_event, form_round))
+        return redirect(url_for('gradedel'))
+
+    return render_template('gradedel.html', title='删除', form=form)

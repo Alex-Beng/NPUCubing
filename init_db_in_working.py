@@ -19,3 +19,8 @@ u = User(user_name='alexbeng')
 u.set_password('10920971')
 db.session.add(u)
 db.session.commit()
+
+u = User(user_name='npuca')
+u.set_password('npuca')
+db.session.add(u)
+db.session.commit()

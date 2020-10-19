@@ -16,5 +16,43 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'KZXYSNSKSKWUJILA'
     ADMINS = ['yfast_send@163.com']
 
-    # 设置comp_id
+
+    CSV_PATH = "./data/working.csv"
+    # 比赛设置
     COMP_ID = 0
+    COMP_EVENT = [
+        '333', 
+        '222', 
+        '333of', 
+        '444', 
+        '333oh', 
+        'py', 
+        'sk'
+    ]
+    COMP_EVENT_CHINESE = [
+        '三阶速拧', 
+        '二阶速拧', 
+        '三阶单面', 
+        '四阶速拧', 
+        '三阶单手',
+        '金字塔',
+        '斜转'
+    ]
+    COMP_ROUND_NUM = [
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1
+    ]
+    COMP_ROUND_COMPUTE_WAY = [
+        ['bo3', 'ao5'],
+        ['bo3', 'ao5'],
+        ['bo3'],
+        ['ao5'],
+        ['ao5'],
+        ['ao5'],
+        ['ao5']
+    ]

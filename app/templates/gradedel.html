@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>成绩删除</h1>
+    <form action="" method="post" novalidate class="form-horizontal">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.sign_id.label }}
+            {{ form.sign_id(size=32) }}
+            {% for error in form.sign_id.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div>
+            {{ form.rround.label }}
+            {{ form.rround(size=32) }}
+            {% for error in form.rround.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div> 
+        
+        <div>
+            {{ form.item.label }}
+            {{ form.item(size=32) }}
+            {% for error in form.item.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        <p>{{ form.submit() }}</p>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+{% endblock %}

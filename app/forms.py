@@ -11,7 +11,7 @@ class LoginForm(FlaskForm):
 
 class GradeinForm(FlaskForm):
     sign_id = StringField('选手序号', validators=[DataRequired()])
-    # 直接硬编码comp_id好了
+    # comp_id在app的全局变量中定义
 #     comp_id = SelectField('比赛编码', choices=[(1, 'yay'), (2, 'ya')], render_kw={
 #             'class': 'form-control'
 #         },
@@ -29,3 +29,9 @@ class LiveOptionForm(FlaskForm):
     rround = IntegerField('轮次', validators=[DataRequired()])
     item = StringField('项目', validators=[DataRequired()])
     submit = SubmitField('提交')
+
+class GradedelForm(FlaskForm):
+    sign_id = StringField('选手序号', validators=[DataRequired()])
+    rround = IntegerField('轮次', validators=[DataRequired()])
+    item = StringField('项目', validators=[DataRequired()])
+    submit = SubmitField('确认删除')

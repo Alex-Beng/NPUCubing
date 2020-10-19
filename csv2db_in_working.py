@@ -3,50 +3,18 @@ from app.models import User, Player, Comp, CompEvents, Events, Result, Entry
 
 import datetime
 
-# 一些基础信息
-file_path = "./data/working.csv"
-# 以下是某一场比赛(通过app设定的comp_id确定，例如今年(2020)用的是0)
-# 开设项目的id，名字，和轮次
-event = [
-    '333', 
-    '222', 
-    '333of', 
-    '444', 
-    '333oh', 
-    'py', 
-    'sk'
-]
-col = [
-    '三阶速拧', 
-    '二阶速拧', 
-    '三阶单面', 
-    '四阶速拧', 
-    '三阶单手',
-    '金字塔',
-    '斜转'
-]
-rnd = [
-    2,
-    2,
-    1,
-    1,
-    1,
-    1,
-    1
-]
-compute_way = [
-    ['bo3', 'ao5'],
-    ['bo3', 'ao5'],
-    ['bo3'],
-    ['ao5'],
-    ['ao5'],
-    ['ao5'],
-    ['ao5']
-]
+file_path = app.config['CSV_PATH']
+
+comp_id = app.config['COMP_ID']
+event = app.config['COMP_EVENT']
+col = app.config['COMP_EVENT_CHINESE']
+rnd = app.config['COMP_ROUND_NUM']
+compute_way = app.config['COMP_ROUND_COMPUTE_WAY']
+
+
 event2col = dict(zip(event, col))
 col2event = dict(zip(col, event))
 
-comp_id = app.config['COMP_ID']
 # 插Comp表
 comp_name = '第四届校内赛'
 comp_date = datetime.date(2020, 10, 31)
