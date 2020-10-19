@@ -2,7 +2,7 @@ from app import app, db
 from app.forms import LoginForm, GradeinForm, LiveOptionForm, GradedelForm
 from app.models import User, Player, Comp, CompEvents, Events, Result, Entry
 from flask_login import current_user, login_user, logout_user, login_required
-from flask import render_template, flash, redirect, url_for, request, send_file
+from flask import render_template, flash, redirect, url_for, request, send_file, send_from_directory
 from werkzeug.urls import url_parse
 
 # 取最好
@@ -24,6 +24,10 @@ def ao5(res):
     del performs[performs.index(min(performs))]
     # print(performs)
     return sum(performs)/3
+
+@app.route('/favicon.ico')
+def get_fav():
+    return send_from_directory('../', 'npuca.ico')
 
 
 @app.route('/')
