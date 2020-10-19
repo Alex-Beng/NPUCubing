@@ -166,9 +166,10 @@ def living():
                    Result.res4,
                    Result.res5) \
             .join(Player, Result.player_id==Player.id) \
-            .join(Result, Result.player_id==Entry.player_id) \
+            .join(Entry, Entry.player_id==Result.player_id) \ 
             .filter(Result.round==form_round, Result.comp_id==comp_id, Result.item==form_event) \
             .all()
+            # wdnmd这个查询的第二个join似乎跟版本相关，之后要改成直接用sql
 
         if len(curr_res)==0:
             flash("此轮次尚未有成绩更新")
