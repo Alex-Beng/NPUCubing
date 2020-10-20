@@ -3,6 +3,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, SelectField
 from wtforms.validators import DataRequired
 
+from app import app
+
 class LoginForm(FlaskForm):
     user_name = StringField('用户名', validators=[DataRequired()])
     password = PasswordField('密码', validators=[DataRequired()])
@@ -26,8 +28,19 @@ class GradeinForm(FlaskForm):
     submit = SubmitField('提交')
 
 class LiveOptionForm(FlaskForm):
-    rround = IntegerField('轮次', validators=[DataRequired()])
-    item = StringField('项目', validators=[DataRequired()])
+    # rround = IntegerField('轮次', validators=[DataRequired()])
+    rround = SelectField(
+        label='轮次', 
+        choices=range(1, 3), 
+        default=1
+        )
+    # item = StringField('项目', validators=[DataRequired()])
+    events = app.config['COMP_EVENT']
+    item = SelectField(
+        label='项目', 
+        choices=events,
+        default='333'
+        )
     submit = SubmitField('提交')
 
 class GradedelForm(FlaskForm):

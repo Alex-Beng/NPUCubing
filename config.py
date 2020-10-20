@@ -27,7 +27,8 @@ class Config(object):
         '444', 
         '333oh', 
         'py', 
-        'sk'
+        'sk',
+        'czz'
     ]
     COMP_EVENT_CHINESE = [
         '三阶速拧', 
@@ -36,11 +37,13 @@ class Config(object):
         '四阶速拧', 
         '三阶单手',
         '金字塔',
-        '斜转'
+        '斜转',
+        '三阶重组'
     ]
     COMP_ROUND_NUM = [
         2,
         2,
+        1,
         1,
         1,
         1,
@@ -54,5 +57,6 @@ class Config(object):
         ['ao5'],
         ['ao5'],
         ['ao5'],
-        ['ao5']
+        ['ao5'],
+        ['bo3']
     ]
