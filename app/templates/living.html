@@ -9,10 +9,7 @@
             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                 选择轮次
             </button> 
-            <div class="dropdown-menu">           
-            <!-- {{ form.rround.label }} -->
-            {{ form.rround(size=2) }}
-            </div>
+            {{ form.rround(size=10) }}
             {% for error in form.rround.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
@@ -22,14 +19,24 @@
             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                 选择项目
             </button>            
-            <div class="dropdown-menu">
-            <!-- {{ form.item.label }} -->
-            {{ form.item(size=7) }}
-            </div>
+
+            {{ form.item(size=10) }}
             {% for error in form.item.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </div>
+
+        <div class="dropdown ">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                选择性别
+            </button>            
+
+            {{ form.gender(size=10) }}
+            {% for error in form.item.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
         <p>{{ form.submit() }}</p>
     </form>
 

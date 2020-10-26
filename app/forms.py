@@ -1,6 +1,6 @@
 # 表单类们
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, SelectField, RadioField
 from wtforms.validators import DataRequired
 
 from app import app
@@ -29,17 +29,31 @@ class GradeinForm(FlaskForm):
 
 class LiveOptionForm(FlaskForm):
     # rround = IntegerField('轮次', validators=[DataRequired()])
-    rround = SelectField(
+    rround = RadioField(
         label='轮次', 
         choices=range(1, 3), 
-        default=1
-        )
+        default=1,
+        render_kw={
+            'class' : 'dropdown-menu'
+        }
+    )
     # item = StringField('项目', validators=[DataRequired()])
     events = app.config['COMP_EVENT']
-    item = SelectField(
+    item = RadioField(
         label='项目', 
         choices=events,
-        default='333'
+        default='333',
+        render_kw={
+            'class' : 'dropdown-menu'
+        }
+        )
+    gender = RadioField(
+        label='性别', 
+        choices=['男', '女', '其他', '*'],
+        default='*',
+        render_kw={
+            'class' : 'dropdown-menu'
+        }
         )
     submit = SubmitField('提交')
 

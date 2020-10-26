@@ -153,7 +153,14 @@ def living():
 
         form_round = form.rround.data
         form_event = form.item.data
+        form_gender = form.gender.data
 
+        # parser gender
+        if form_gender in ['男', '女', '其他']:
+            form_gender = list(form_gender)
+        else:
+            form_gender = ['男', '女', '其他']
+        
         # 验证项目轮次正确
         db_compevent = db.session.query(CompEvents).get((comp_id, form_event, form_round))
         if not db_compevent:
@@ -171,7 +178,7 @@ def living():
                    Result.res5) \
             .join(Player, Result.player_id==Player.id) \
             .join(Entry, Entry.player_id==Result.player_id) \
-            .filter(Result.round==form_round, Result.comp_id==comp_id, Result.item==form_event) \
+            .filter(Result.round==form_round, Result.comp_id==comp_id, Result.item==form_event, Player.player_gender.in_(form_gender)) \
             .all()
             # wdnmd这个查询的第二个join似乎跟版本相关，之后要改成直接用sql
 
