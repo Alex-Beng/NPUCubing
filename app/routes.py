@@ -72,7 +72,8 @@ def gradein():
         # print(db_players, type(db_players))
         if not db_players:
             flash("选手不存在或未参加，请核对后重新录入")
-            return redirect(url_for('gradein'))
+            return render_template('gradein.html', form=form, title='录入')
+            # return redirect(url_for('gradein'))
         
         # 验证项目及轮次是否正确
         form_round = form.rround.data
@@ -81,7 +82,8 @@ def gradein():
         db_compevent = db.session.query(CompEvents).get((comp_id, form_event, form_round))
         if not db_compevent:
             flash("赛事未开设此项目或轮次不正确")
-            return redirect(url_for('gradein'))
+            return render_template('gradein.html', form=form, title='录入')
+            # return redirect(url_for('gradein'))
         # print(db_compevent.compute_way)
         # 验证成绩有效
         form_res = []
@@ -102,11 +104,13 @@ def gradein():
                     form_parsed_res.append(value)
         except Exception:
             flash("成绩不符合规范")
-            return redirect(url_for('gradein'))
+            return render_template('gradein.html', form=form, title='录入')
+            # return redirect(url_for('gradein'))
         if db_compevent.compute_way == 'ao5' and len(form_parsed_res)!=5 \
         or db_compevent.compute_way == 'bo3' and len(form_parsed_res)!=3:
             flash("成绩数量不对鸭")
-            return redirect(url_for('gradein'))
+            return render_template('gradein.html', form=form, title='录入')
+            # return redirect(url_for('gradein'))
                     
         # 插入数据库库
         result = Result(
@@ -146,7 +150,7 @@ def logout():
 @app.route('/living', methods=['GET', 'POST'])
 def living():
     form = LiveOptionForm()
-    labels = ['排名', '选手序号', '名字', '成绩', '详细成绩', '', '', '', '']
+    labels = ['排名', '序号', '名字', '成绩', '详细成绩', '', '', '', '']
     content = []
     if form.validate_on_submit():
         comp_id = app.config['COMP_ID']
@@ -165,7 +169,8 @@ def living():
         db_compevent = db.session.query(CompEvents).get((comp_id, form_event, form_round))
         if not db_compevent:
             flash("赛事未开设此项目或轮次不正确")
-            return redirect(url_for('living'))
+            # return redirect(url_for('living'))
+            return render_template('living.html', form=form, title='直播')
 
         # 从result表查询成绩
         curr_res = db.session \
@@ -184,7 +189,8 @@ def living():
 
         if len(curr_res)==0:
             flash("此轮次尚未有成绩更新")
-            return redirect(url_for('living'))
+            # return redirect(url_for('living'))
+            return render_template('living.html', form=form, title='直播')
         # 取最好
         if db_compevent.compute_way == 'bo3':
             curr_res = sorted(curr_res, key=bo3)
@@ -241,7 +247,9 @@ def gradedel():
         db_players = db.session.query(Entry).get((comp_id, form_sign_id))
         if not db_players:
             flash("选手不存在或未参加")
-            return redirect(url_for('gradedel'))
+            return render_template('gradedel.html', form=form, title='删除')
+            # return redirect(url_for('gradedel'))
+
 
         # 验证项目及轮次是否正确
         form_round = form.rround.data
@@ -250,13 +258,15 @@ def gradedel():
         db_compevent = db.session.query(CompEvents).get((comp_id, form_event, form_round))
         if not db_compevent:
             flash("赛事未开设此项目或轮次不正确")
-            return redirect(url_for('gradedel'))
+            return render_template('gradedel.html', form=form, title='删除')
+            # return redirect(url_for('gradedel'))
         
         # 验证该选手有无录入的成绩
         db_res = db.session.query(Result).get((db_players.player_id, comp_id, form_round, form_event))
         if not db_res:
             flash("该选手此轮次未录入")
-            return redirect(url_for('gradedel'))
+            return render_template('gradedel.html', form=form, title='删除')
+            # return redirect(url_for('gradedel'))
         
         # 进行删除
         db.session.delete(db_res)
